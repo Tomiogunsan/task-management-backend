@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['admin', 'project-manager', 'team-member'],
-    default: ['team-member'],
+    default: 'team-member',
   },
   projects: [
     {
@@ -63,6 +63,28 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+  next();
+});
+
+userSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    delete ret.password;
+    delete ret.passwordConfirm;
+    return ret;
+  },
+});
+
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword,
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.model('User', userSchema);
 
