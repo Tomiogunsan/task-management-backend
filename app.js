@@ -50,7 +50,7 @@ app.get('/docs.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
-console.log(`Docs available at http://127.0.0.1:3000/docs`);
+// console.log(`Docs available at http://127.0.0.1:3000/docs`);
 
 app.get('/', (req, res) => res.status(200).send('Hello World!'));
 

@@ -20,6 +20,10 @@ router
   .get(taskController.getAllTask)
   .post(taskController.createTask);
 
-router.route('/:id/task/:taskId').delete(taskController.deleteTask);
+router
+  .route('/:id/task/:taskId')
+  .get(taskController.getTask)
+  .patch(taskController.updateTask)
+  .delete(taskController.deleteTask);
 
 module.exports = router;

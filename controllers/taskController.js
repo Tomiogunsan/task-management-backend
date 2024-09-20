@@ -7,7 +7,7 @@ exports.createTask = catchAsync(async (req, res) => {
   const task = new Task({
     name,
     description,
-    project: req.params.projectId,
+    project: req.params.id,
   });
   await task.save();
   res.status(201).json({
@@ -19,8 +19,7 @@ exports.createTask = catchAsync(async (req, res) => {
 });
 
 exports.getAllTask = catchAsync(async (req, res, next) => {
-  console.log(req.params.id);
-  const tasks = await Task.find().populate('project');
+  const tasks = await Task.find().populate('project', '_id name');
   if (!tasks) {
     return next(new AppError('No task found ', 404));
   }
@@ -28,6 +27,34 @@ exports.getAllTask = catchAsync(async (req, res, next) => {
     status: 'success',
     data: {
       tasks,
+    },
+  });
+});
+
+exports.getTask = catchAsync(async (req, res, next) => {
+  const task = await Task.findById(req.params.taskId).populate(
+    'project',
+    '_id name',
+  );
+  if (!task) return next(new AppError('invalid ID', 404));
+  res.status(200).json({
+    status: 'success',
+    data: {
+      task,
+    },
+  });
+});
+
+exports.updateTask = catchAsync(async (req, res, next) => {
+  const task = await Task.findByIdAndUpdate(req.params.taskId, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  if (!task) return next(new AppError('invalid ID', 404));
+  res.status(200).json({
+    status: 'success',
+    data: {
+      task,
     },
   });
 });
