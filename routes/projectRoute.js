@@ -11,6 +11,7 @@ router
 router
   .route('/:id')
   .get(projectController.getProject)
-  .patch(projectController.updateProject);
+  .patch(projectController.updateProject)
+  .delete(projectController.deleteProject);
 
 module.exports = router;

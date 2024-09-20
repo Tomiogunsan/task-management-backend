@@ -42,11 +42,20 @@ exports.updateProject = catchAsync(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
-  if (!project) return new AppError('invalid ID', 404);
+  if (!project) return next(new AppError('invalid ID', 404));
   res.status(200).json({
     status: 'success',
     data: {
       project,
     },
+  });
+});
+
+exports.deleteProject = catchAsync(async (req, res, next) => {
+  const project = await Project.findByIdAndDelete(req.params.id);
+  if (!project) return next(new AppError('invalid ID', 404));
+  res.status(200).json({
+    status: 'success',
+    message: 'Project deleted successfully',
   });
 });
