@@ -8,4 +8,9 @@ router
   .get(projectController.getAllProject)
   .post(projectController.createProject);
 
+router
+  .route('/:id')
+  .get(projectController.getProject)
+  .patch(projectController.updateProject);
+
 module.exports = router;

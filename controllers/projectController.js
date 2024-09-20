@@ -24,3 +24,29 @@ exports.getAllProject = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getProject = catchAsync(async (req, res, next) => {
+  const project = await Project.findById(req.params.id);
+  if (!project)
+    return next(new AppError('No project found with that id ', 404));
+  res.status(200).json({
+    status: 'success',
+    data: {
+      project,
+    },
+  });
+});
+
+exports.updateProject = catchAsync(async (req, res, next) => {
+  const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  if (!project) return new AppError('invalid ID', 404);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      project,
+    },
+  });
+});
