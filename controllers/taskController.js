@@ -33,7 +33,7 @@ exports.getAllTask = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteTask = catchAsync(async (req, res, next) => {
-  const task = await Task.findByIdAndDelete(req.params.id);
+  const task = await Task.findByIdAndDelete(req.params.taskId);
   if (!task) return next(new AppError('invalid ID', 404));
   res.status(200).json({
     status: 'success',
