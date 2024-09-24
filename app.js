@@ -8,6 +8,7 @@ const authRoute = require('./routes/authRoute');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const projectRoute = require('./routes/projectRoute');
+const teamRoute = require('./routes/teamRoute');
 
 const { version } = require('./package.json');
 
@@ -57,6 +58,7 @@ app.get('/', (req, res) => res.status(200).send('Hello World!'));
 // app route
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/project', projectRoute);
+app.use('/api/v1/team', teamRoute);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server`, 404));

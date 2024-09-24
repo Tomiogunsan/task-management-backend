@@ -12,11 +12,25 @@ const signToken = (id) =>
 const blacklistedToken = new Set();
 
 exports.signup = catchAsync(async (req, res, next) => {
+  const allowedRoles = ['team-member', 'project-manager', 'admin'];
+  let userRole = 'team-member';
+  const adminExists = await User.findOne({ role: 'admin' });
+
+  if (!adminExists && req.body.role === 'admin') {
+    userRole = 'admin';
+  } else if (req.body.role === 'admin' || req.body.role === 'project-manager') {
+    return next(new AppError('Unauthorized to create this role', 403));
+  }
+
+  if (req.body.role && allowedRoles.includes(req.body.role)) {
+    userRole = req.body.role;
+  }
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    role: userRole,
   });
 
   const token = signToken(newUser._id);
