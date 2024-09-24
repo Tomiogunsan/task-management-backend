@@ -26,4 +26,8 @@ router
   .patch(taskController.updateTask)
   .delete(taskController.deleteTask);
 
+router
+  .route('/:id/task/:taskId/assign')
+  .patch(taskController.assignUsersToTask);
+
 module.exports = router;

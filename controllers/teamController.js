@@ -16,8 +16,7 @@ exports.createTeam = catchAsync(async (req, res) => {
 
 exports.addMembers = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  console.log(id);
-  console.log(req.body);
+
   const { memberId } = req.body;
   const team = await Team.findById(id);
 
