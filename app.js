@@ -9,6 +9,7 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const projectRoute = require('./routes/projectRoute');
 const teamRoute = require('./routes/teamRoute');
+const userRoute = require('./routes/userRoute');
 
 const { version } = require('./package.json');
 
@@ -59,6 +60,7 @@ app.get('/', (req, res) => res.status(200).send('Hello World!'));
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/project', projectRoute);
 app.use('/api/v1/team', teamRoute);
+app.use('/api/v1/user', userRoute);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
