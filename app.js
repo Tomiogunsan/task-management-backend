@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const swaggerUi = require('swagger-ui-express');
 
@@ -55,6 +56,8 @@ app.get('/docs.json', (req, res) => {
 // console.log(`Docs available at http://127.0.0.1:3000/docs`);
 
 app.get('/', (req, res) => res.status(200).send('Hello World!'));
+
+app.use(cors());
 
 // app route
 app.use('/api/v1/auth', authRoute);
