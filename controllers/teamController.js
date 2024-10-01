@@ -14,6 +14,19 @@ exports.createTeam = catchAsync(async (req, res) => {
   });
 });
 
+exports.getAllTeam = catchAsync(async (req, res, next) => {
+  const teams = await Team.find();
+  if (!teams) {
+    return next(new AppError('No team found ', 404));
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      teams,
+    },
+  });
+});
+
 exports.addMembers = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 

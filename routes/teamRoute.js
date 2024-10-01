@@ -4,7 +4,10 @@ const teamController = require('../controllers/teamController');
 
 const router = express.Router();
 
-router.route('/').post(teamController.createTeam);
+router
+  .route('/')
+  .get(teamController.getAllTeam)
+  .post(teamController.createTeam);
 
 router.route('/:id/add-member').patch(teamController.addMembers);
 router.route('/:id/assign-project').patch(teamController.assignProject);
