@@ -57,7 +57,13 @@ app.get('/docs.json', (req, res) => {
 
 app.get('/', (req, res) => res.status(200).send('Hello World!'));
 
-app.use(cors());
+app.use(
+  cors({
+    origin: '*',
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true,
+  }),
+);
 
 // app route
 app.use('/api/v1/auth', authRoute);
