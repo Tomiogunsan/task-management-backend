@@ -12,12 +12,10 @@ const teamSchema = new mongoose.Schema({
       ref: 'User',
     },
   ],
-  projects: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Project',
-    },
-  ],
+  projects: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project',
+  },
 });
 
 const Team = mongoose.model('Team', teamSchema);

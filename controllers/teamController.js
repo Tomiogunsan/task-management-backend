@@ -15,7 +15,7 @@ exports.createTeam = catchAsync(async (req, res) => {
 });
 
 exports.getAllTeam = catchAsync(async (req, res, next) => {
-  const teams = await Team.find().populate('projects', '_id name');
+  const teams = await Team.find().populate('projects', ' name');
   if (!teams) {
     return next(new AppError('No team found ', 404));
   }
