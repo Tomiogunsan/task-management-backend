@@ -60,7 +60,7 @@ app.get('/', (req, res) => res.status(200).send('Hello World!'));
 app.use(
   cors({
     origin: '*',
-    methods: 'GET,POST,PUT,DELETE',
+    methods: 'GET,POST,PUT,DELETE,PATCH',
     credentials: true,
   }),
 );

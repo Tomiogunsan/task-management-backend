@@ -6,6 +6,9 @@ const teamSchema = new mongoose.Schema({
     required: [true, 'Please provide a name'],
     trim: true,
   },
+  description: {
+    type: String,
+  },
   members: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,6 +18,10 @@ const teamSchema = new mongoose.Schema({
   projects: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Project',
+  },
+  dateCreated: {
+    type: Date,
+    default: Date.now,
   },
 });
 
