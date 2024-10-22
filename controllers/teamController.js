@@ -37,8 +37,8 @@ exports.addMembers = catchAsync(async (req, res, next) => {
 
   if (!team) return next(new AppError('No Team Found', 404));
   const users = await User.find({ _id: { $in: memberId } });
-  if (users.length !== memberId.length) {
-    return next(new AppError('Some users not found', 404));
+  if (users !== memberId) {
+    return next(new AppError('No user not found', 404));
   }
   const existingTeams = await Team.find({ members: { $in: memberId } });
   if (existingTeams.length > 0) {
