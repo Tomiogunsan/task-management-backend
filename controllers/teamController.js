@@ -40,6 +40,20 @@ exports.addMembers = catchAsync(async (req, res, next) => {
   if (users.length !== memberId.length) {
     return next(new AppError('Some users not found', 404));
   }
+  const existingTeams = await Team.find({ members: { $in: memberId } });
+  if (existingTeams.length > 0) {
+    const assignedUsers = existingTeams.flatMap((teams) => teams.members);
+    const alreadyAssigned = users.filter((user) =>
+      assignedUsers.includes(user._id.toString()),
+    );
+
+    return next(
+      new AppError(
+        `Some users are already assigned to another team: ${alreadyAssigned.map((user) => user.name).join(', ')}`,
+        400,
+      ),
+    );
+  }
   const updatedTeam = await Team.findByIdAndUpdate(
     id,
     {
