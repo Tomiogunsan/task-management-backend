@@ -13,7 +13,7 @@ exports.createProject = catchAsync(async (req, res) => {
 });
 
 exports.getAllProject = catchAsync(async (req, res, next) => {
-  const projects = await Project.find().sort({ createdAt: -1 });
+  const projects = await Project.find().sort({ dateCreated: -1 });
 
   if (!projects) {
     return next(new AppError('No project found ', 404));
