@@ -79,3 +79,25 @@ exports.assignProject = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getAllTeamMembers = catchAsync(async (req, res, next) => {
+  const team = await Team.findById(req.params.id);
+  if (!team) return next(new AppError('No Team Found', 404));
+  const members = await User.find({ _id: { $in: team.members } }).sort({
+    createdAt: -1,
+  });
+  if (members.length === 0) {
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        members: [],
+      },
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      members,
+    },
+  });
+});

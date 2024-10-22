@@ -9,7 +9,10 @@ router
   .get(teamController.getAllTeam)
   .post(teamController.createTeam);
 
-router.route('/:id/add-member').patch(teamController.addMembers);
+router
+  .route('/:id/member')
+  .get(teamController.getAllTeamMembers)
+  .patch(teamController.addMembers);
 router.route('/:id/assign-project').patch(teamController.assignProject);
 
 module.exports = router;
