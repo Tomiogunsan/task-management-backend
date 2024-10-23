@@ -56,7 +56,7 @@ exports.addMembers = catchAsync(async (req, res, next) => {
   const updatedTeam = await Team.findByIdAndUpdate(
     id,
     {
-      $addToSet: { members: { $each: memberId } },
+      $addToSet: { members: memberId },
     },
     { new: true, runValidators: true },
   );
