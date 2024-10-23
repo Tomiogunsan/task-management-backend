@@ -37,19 +37,18 @@ exports.addMembers = catchAsync(async (req, res, next) => {
 
   if (!team) return next(new AppError('No Team Found', 404));
   const users = await User.find({ _id: { $in: memberId } });
-  if (users !== memberId) {
-    return next(new AppError('No user not found', 404));
+
+  const userId = users.map((item) => item._id);
+
+  if (userId.toString() !== memberId) {
+    return next(new AppError(' User not found', 404));
   }
   const existingTeams = await Team.find({ members: { $in: memberId } });
-  if (existingTeams.length > 0) {
-    const assignedUsers = existingTeams.flatMap((teams) => teams.members);
-    const alreadyAssigned = users.filter((user) =>
-      assignedUsers.includes(user._id.toString()),
-    );
 
+  if (existingTeams.length > 0) {
     return next(
       new AppError(
-        `Some users are already assigned to another team: ${alreadyAssigned.map((user) => user.name).join(', ')}`,
+        `This user is already assigned to another team: ${existingTeams.map((teams) => teams.name).join(', ')}`,
         400,
       ),
     );
