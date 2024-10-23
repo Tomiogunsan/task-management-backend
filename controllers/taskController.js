@@ -22,7 +22,9 @@ exports.createTask = catchAsync(async (req, res) => {
 exports.getAllTask = catchAsync(async (req, res, next) => {
   const tasks = await Task.find()
     .populate('project', '_id name')
+    .populate('assignedUser', 'name')
     .sort({ dateCreated: -1 });
+  
   if (!tasks) {
     return next(new AppError('No task found ', 404));
   }
