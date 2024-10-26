@@ -80,10 +80,15 @@ exports.assignProject = catchAsync(async (req, res, next) => {
   const updatedTeam = await Team.findByIdAndUpdate(
     id,
     {
-      $addToSet: { projects: projectId },
+      $addToSet: { project: projectId },
     },
     { new: true, runValidators: true },
   );
+  await User.updateMany(
+    { _id: { $in: team.members } },
+    { $addToSet: { projects: projectId } },
+  );
+
   res.status(200).json({
     status: 'success',
     message: 'Project Added Successfully',
@@ -95,12 +100,14 @@ exports.assignProject = catchAsync(async (req, res, next) => {
 
 exports.getAllTeamMembers = catchAsync(async (req, res, next) => {
   const team = await Team.findById(req.params.id);
+
   if (!team) return next(new AppError('No Team Found', 404));
   const members = await User.find({ _id: { $in: team.members } })
-    .populate('project', '_id name')
+    .populate({ path: 'projects', select: '_id name' })
     .sort({
       createdAt: -1,
     });
+
   if (members.length === 0) {
     return res.status(200).json({
       status: 'success',

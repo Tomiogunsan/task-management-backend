@@ -22,12 +22,11 @@ const taskSchema = new mongoose.Schema({
     ref: 'User',
     default: null,
   },
-  project: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Project',
-    },
-  ],
+  project: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project',
+  },
+
   dateCreated: {
     type: Date,
     default: Date.now,

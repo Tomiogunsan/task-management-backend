@@ -37,12 +37,11 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'project-manager', 'team-member'],
     default: 'team-member',
   },
-  projects: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Project',
-    },
-  ],
+  projects: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project',
+  },
+
   teams: [
     {
       type: mongoose.Schema.Types.ObjectId,
