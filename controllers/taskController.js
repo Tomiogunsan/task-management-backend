@@ -81,6 +81,9 @@ exports.assignUsersToTask = catchAsync(async (req, res, next) => {
 
   const task = await Task.findById(taskId);
   if (!task) return next(new AppError('No task found', 404));
+  if (task.assignedUser) {
+    return next(new AppError('This task is already assigned to a user', 400));
+  }
 
   const user = await User.findById(userId);
   if (!user) return next(new AppError('No user found', 404));
@@ -94,7 +97,7 @@ exports.assignUsersToTask = catchAsync(async (req, res, next) => {
   );
   res.status(200).json({
     status: 'success',
-    message: 'User Assigned Successfully',
+    message: 'Task Assigned Successfully',
     data: {
       task: {
         // eslint-disable-next-line node/no-unsupported-features/es-syntax
