@@ -20,8 +20,9 @@ exports.createTask = catchAsync(async (req, res) => {
 });
 
 exports.getAllTask = catchAsync(async (req, res, next) => {
-  const { projectId } = req.query;
-  const filter = projectId ? { project: projectId } : {};
+  const { assignedUser } = req.query;
+
+  const filter = assignedUser ? { assignedUser: assignedUser } : {};
   const tasks = await Task.find(filter)
     .populate('project', '_id name')
     .populate('assignedUser', 'name')
