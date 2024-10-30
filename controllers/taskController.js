@@ -21,8 +21,9 @@ exports.createTask = catchAsync(async (req, res) => {
 
 exports.getAllTask = catchAsync(async (req, res, next) => {
   const { assignedUser } = req.query;
-
-  const filter = assignedUser ? { assignedUser: assignedUser } : {};
+  const { id: projectId } = req.params;
+  const filter = { project: projectId };
+  if (assignedUser) filter.assignedUser = assignedUser;
   const tasks = await Task.find(filter)
     .populate('project', '_id name')
     .populate('assignedUser', 'name')
@@ -88,6 +89,10 @@ exports.assignUsersToTask = catchAsync(async (req, res, next) => {
 
   const user = await User.findById(userId);
   if (!user) return next(new AppError('No user found', 404));
+  const { project } = task;
+  if (!project.teamMembers.includes(userId)) {
+    return next(new AppError('User is not a team member of the project', 403));
+  }
 
   const updatedTask = await Task.findByIdAndUpdate(
     taskId,

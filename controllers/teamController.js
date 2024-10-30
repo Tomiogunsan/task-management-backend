@@ -17,6 +17,18 @@ exports.createTeam = catchAsync(async (req, res) => {
 exports.getAllTeam = catchAsync(async (req, res, next) => {
   const teams = await Team.find()
     .populate('projects', ' name')
+    .populate({
+      path: 'members',
+      select: '_id name projects',
+      populate: {
+        path: 'projects',
+        select: '_id name task',
+        populate: {
+          path: 'task',
+          select: '_id name description status project dateCreated',
+        },
+      },
+    })
     .sort({ dateCreated: -1 });
   if (!teams) {
     return next(new AppError('No team found ', 404));
@@ -83,11 +95,25 @@ exports.assignProject = catchAsync(async (req, res, next) => {
       $addToSet: { project: projectId },
     },
     { new: true, runValidators: true },
-  );
+  ).populate({
+    path: 'members',
+    select: '_id name projects',
+    populate: {
+      path: 'projects',
+      select: '_id name',
+    },
+  });
   await User.updateMany(
     { _id: { $in: team.members } },
     { $addToSet: { projects: projectId } },
-  );
+  ).populate({
+    path: 'projects',
+    select: '_id name',
+    populate: {
+      path: 'task',
+      select: '_id name description status project dateCreated',
+    },
+  });
 
   res.status(200).json({
     status: 'success',
@@ -102,8 +128,16 @@ exports.getAllTeamMembers = catchAsync(async (req, res, next) => {
   const team = await Team.findById(req.params.id);
 
   if (!team) return next(new AppError('No Team Found', 404));
+
   const members = await User.find({ _id: { $in: team.members } })
-    .populate({ path: 'projects', select: '_id name' })
+    .populate({
+      path: 'projects',
+      select: '_id name',
+      populate: {
+        path: 'task',
+        select: '_id name description status project dateCreated',
+      },
+    })
     .sort({
       createdAt: -1,
     });
