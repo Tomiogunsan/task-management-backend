@@ -2,15 +2,26 @@ const Task = require('../models/taskModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const User = require('../models/userModel');
+const Project = require('../models/projectModel');
 
-exports.createTask = catchAsync(async (req, res) => {
+exports.createTask = catchAsync(async (req, res, next) => {
   const { name, description } = req.body;
+  const project = await Project.findById(req.params.id);
+  if (!project) {
+    return next(new AppError('No project found ', 404));
+  }
   const task = new Task({
     name,
     description,
     project: req.params.id,
   });
   await task.save();
+
+  project.task.push(task);
+  const savedProject = await project.save();
+  if (!savedProject) {
+    return next(new AppError('No project saved ', 404));
+  }
   res.status(201).json({
     status: 'success',
     data: {
@@ -20,13 +31,13 @@ exports.createTask = catchAsync(async (req, res) => {
 });
 
 exports.getAllTask = catchAsync(async (req, res, next) => {
-  const { assignedUser } = req.query;
+  // const { assignedUser } = req.query;
   const { id: projectId } = req.params;
   const filter = { project: projectId };
-  if (assignedUser) filter.assignedUser = assignedUser;
+  // if (assignedUser) filter.assignedUser = assignedUser;
   const tasks = await Task.find(filter)
     .populate('project', '_id name')
-    .populate('assignedUser', 'name')
+    .populate('assignedUser', '_id name')
     .sort({ dateCreated: -1 });
 
   if (!tasks) {
@@ -82,6 +93,7 @@ exports.assignUsersToTask = catchAsync(async (req, res, next) => {
   const { userId } = req.body;
 
   const task = await Task.findById(taskId);
+
   if (!task) return next(new AppError('No task found', 404));
   if (task.assignedUser) {
     return next(new AppError('This task is already assigned to a user', 400));
@@ -90,7 +102,8 @@ exports.assignUsersToTask = catchAsync(async (req, res, next) => {
   const user = await User.findById(userId);
   if (!user) return next(new AppError('No user found', 404));
   const { project } = task;
-  if (!project.teamMembers.includes(userId)) {
+
+  if (!project || !project.teamMembers.includes(userId)) {
     return next(new AppError('User is not a team member of the project', 403));
   }
 
@@ -101,6 +114,7 @@ exports.assignUsersToTask = catchAsync(async (req, res, next) => {
     },
     { new: true, runValidators: true },
   );
+
   res.status(200).json({
     status: 'success',
     message: 'Task Assigned Successfully',

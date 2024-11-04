@@ -89,38 +89,29 @@ exports.assignProject = catchAsync(async (req, res, next) => {
   const project = await Project.findById(projectId);
   if (!project) return next(new AppError('No Project Found', 404));
 
-  const updatedTeam = await Team.findByIdAndUpdate(
-    id,
-    {
-      $addToSet: { project: projectId },
-    },
-    { new: true, runValidators: true },
-  ).populate({
-    path: 'members',
-    select: '_id name projects',
-    populate: {
-      path: 'projects',
-      select: '_id name',
-    },
-  });
-  await User.updateMany(
-    { _id: { $in: team.members } },
-    { $addToSet: { projects: projectId } },
-  ).populate({
-    path: 'projects',
-    select: '_id name',
-    populate: {
-      path: 'task',
-      select: '_id name description status project dateCreated',
-    },
-  });
+  team.projects.push(project);
+  await team.save();
+  await Promise.all(
+    team.members.map(async (memberId) => {
+      const user = await User.findById(memberId);
+
+      const projectIds = user.projects.map((item) => item._id);
+      if (projectIds.includes(projectId)) {
+        return next(
+          new AppError('This Project has already been assigned', 404),
+        );
+      }
+      if (!projectIds.includes(projectId)) {
+        user.projects.push(project);
+      }
+      await user.save();
+    }),
+  );
 
   res.status(200).json({
     status: 'success',
     message: 'Project Added Successfully',
-    data: {
-      team: updatedTeam,
-    },
+    data: {},
   });
 });
 
@@ -154,6 +145,30 @@ exports.getAllTeamMembers = catchAsync(async (req, res, next) => {
     status: 'success',
     data: {
       members,
+    },
+  });
+});
+
+exports.getTeamMemberDetails = catchAsync(async (req, res, next) => {
+  const { id: teamId, memberId } = req.params;
+  const team = await Team.findById(teamId);
+  if (!team) return next(new AppError('No Team Found', 404));
+  if (!team.members.includes(memberId)) {
+    return next(new AppError('Member not found in this team', 404));
+  }
+  const member = await User.findById(memberId).populate({
+    path: 'projects',
+    select: '_id name',
+    populate: {
+      path: 'task',
+      select: '_id name description status dateCreated',
+    },
+  });
+  if (!member) return next(new AppError('No member found', 404));
+  res.status(200).json({
+    status: 'success',
+    data: {
+      member,
     },
   });
 });

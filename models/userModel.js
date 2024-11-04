@@ -24,23 +24,25 @@ const userSchema = new mongoose.Schema({
   },
   passwordConfirm: {
     type: String,
-    required: [true, 'Please confrim your password'],
-    validate: {
-      validator: function (el) {
-        return el === this.password;
-      },
-      message: 'Passwords are not the same',
-    },
+    // required: [true, 'Please confrim your password'],
+    // validate: {
+    //   validator: function (el) {
+    //     return el === this.password;
+    //   },
+    //   message: 'Passwords are not the same',
+    // },
   },
   role: {
     type: String,
     enum: ['admin', 'project-manager', 'team-member'],
     default: 'team-member',
   },
-  projects: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Project',
-  },
+  projects: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Project',
+    },
+  ],
 
   teams: [
     {
@@ -66,7 +68,7 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 12);
-  this.passwordConfirm = undefined;
+  // this.passwordConfirm = undefined;
   next();
 });
 
@@ -78,12 +80,12 @@ userSchema.set('toJSON', {
   },
 });
 
-userSchema.methods.correctPassword = async function (
-  candidatePassword,
-  userPassword,
-) {
-  return await bcrypt.compare(candidatePassword, userPassword);
-};
+// userSchema.methods.correctPassword = async function (
+//   candidatePassword,
+//   userPassword,
+// ) {
+//   return await bcrypt.compare(candidatePassword, userPassword);
+// };
 
 const User = mongoose.model('User', userSchema);
 
