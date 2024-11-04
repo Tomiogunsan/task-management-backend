@@ -94,7 +94,8 @@ exports.assignProject = catchAsync(async (req, res, next) => {
   await Promise.all(
     team.members.map(async (memberId) => {
       const user = await User.findById(memberId);
-
+      project.teamMembers.push(user);
+      project.save();
       const projectIds = user.projects.map((item) => item._id);
       if (projectIds.includes(projectId)) {
         return next(
@@ -156,14 +157,12 @@ exports.getTeamMemberDetails = catchAsync(async (req, res, next) => {
   if (!team.members.includes(memberId)) {
     return next(new AppError('Member not found in this team', 404));
   }
-  const member = await User.findById(memberId).populate({
-    path: 'projects',
-    select: '_id name',
-    populate: {
-      path: 'task',
+  const member = await User.findById(memberId).populate([
+    {
+      path: 'tasks',
       select: '_id name description status dateCreated',
     },
-  });
+  ]);
   if (!member) return next(new AppError('No member found', 404));
   res.status(200).json({
     status: 'success',

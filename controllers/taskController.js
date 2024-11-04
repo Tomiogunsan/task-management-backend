@@ -89,31 +89,38 @@ exports.deleteTask = catchAsync(async (req, res, next) => {
 });
 
 exports.assignUsersToTask = catchAsync(async (req, res, next) => {
-  const { taskId } = req.params;
+  const { taskId, id } = req.params;
   const { userId } = req.body;
+  const [project, task, user] = await Promise.all([
+    Project.findById(id),
+    Task.findById(taskId),
+    User.findById(userId),
+  ]);
 
-  const task = await Task.findById(taskId);
+  if (!project) return next(new AppError('No project found', 404));
 
   if (!task) return next(new AppError('No task found', 404));
-  if (task.assignedUser) {
-    return next(new AppError('This task is already assigned to a user', 400));
-  }
 
-  const user = await User.findById(userId);
   if (!user) return next(new AppError('No user found', 404));
-  const { project } = task;
-
-  if (!project || !project.teamMembers.includes(userId)) {
-    return next(new AppError('User is not a team member of the project', 403));
+  const checkTask = project.task.find((item) => item._id.toString() === taskId);
+  if (!checkTask) {
+    return next(new AppError('This task is not assigned to this project', 404));
+  }
+  const checkTeamUser = project.teamMembers.find(
+    (item) => item._id.toString() === userId,
+  );
+  if (!checkTeamUser) {
+    return next(new AppError('This user is not part of this team', 404));
+  }
+  if (!user.projects.map((item) => item._id.toString()).includes(id)) {
+    user.projects.push(project);
+    await user.save();
   }
 
-  const updatedTask = await Task.findByIdAndUpdate(
-    taskId,
-    {
-      assignedUser: userId,
-    },
-    { new: true, runValidators: true },
-  );
+  user.tasks.push(task);
+
+  task.assignedUser.push(user);
+  const updatedTask = await Promise.all([user.save(), task.save()]);
 
   res.status(200).json({
     status: 'success',
@@ -121,7 +128,7 @@ exports.assignUsersToTask = catchAsync(async (req, res, next) => {
     data: {
       task: {
         // eslint-disable-next-line node/no-unsupported-features/es-syntax
-        ...updatedTask.toObject(),
+        updatedTask,
       },
     },
   });

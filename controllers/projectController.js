@@ -26,24 +26,6 @@ exports.getAllProject = catchAsync(async (req, res, next) => {
   });
 });
 
-// exports.getProject = catchAsync(async (req, res, next) => {
-//   const project = await Project.findById(req.params.id).populate([
-//     {
-//       path: 'task',
-//       select: '_id name description status  dateCreated',
-//     },
-//   ]);
-//   console.log(project)
-//   if (!project)
-//     return next(new AppError('No project found with that id ', 404));
-//   res.status(200).json({
-//     status: 'success',
-//     data: {
-//       project,
-//     },
-//   });
-// });
-
 exports.getProject = catchAsync(async (req, res, next) => {
   const project = await Project.findById(req.params.id).populate([
     {
