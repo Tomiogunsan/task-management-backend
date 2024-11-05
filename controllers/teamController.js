@@ -16,19 +16,7 @@ exports.createTeam = catchAsync(async (req, res) => {
 
 exports.getAllTeam = catchAsync(async (req, res, next) => {
   const teams = await Team.find()
-    .populate('projects', ' name')
-    .populate({
-      path: 'members',
-      select: '_id name projects',
-      populate: {
-        path: 'projects',
-        select: '_id name task',
-        populate: {
-          path: 'task',
-          select: '_id name description status project dateCreated',
-        },
-      },
-    })
+    .populate('projects', ' _id, name')
     .sort({ dateCreated: -1 });
   if (!teams) {
     return next(new AppError('No team found ', 404));
