@@ -120,16 +120,11 @@ exports.assignUsersToTask = catchAsync(async (req, res, next) => {
   user.tasks.push(task);
 
   task.assignedUser.push(user);
-  const updatedTask = await Promise.all([user.save(), task.save()]);
+  await Promise.all([user.save(), task.save()]);
 
   res.status(200).json({
     status: 'success',
     message: 'Task Assigned Successfully',
-    data: {
-      task: {
-        // eslint-disable-next-line node/no-unsupported-features/es-syntax
-        updatedTask,
-      },
-    },
+    data: {},
   });
 });
