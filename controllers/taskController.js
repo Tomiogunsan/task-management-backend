@@ -128,3 +128,40 @@ exports.assignUsersToTask = catchAsync(async (req, res, next) => {
     data: {},
   });
 });
+
+exports.updateTaskStatus = catchAsync(async (req, res, next) => {
+  const allowedTransitions = {
+    pending: 'in-progress',
+    'in-progress': 'completed',
+  };
+
+  const project = await Project.findById(req.params.id);
+  if (!project) return next(new AppError('No project found', 404));
+  const projectTask = project.task.find(
+    (item) => item._id.toString() === req.params.taskId,
+  );
+  if (!projectTask) return next(new AppError('No task found', 404));
+  const task = await Task.findById(req.params.taskId);
+
+  if (!task) return next(new AppError('invalid ID', 404));
+  if (task.assignedUser.length === 0) {
+    return next(new AppError('Task is not assigned to any user', 404));
+  }
+  const currentStatus = task.status;
+  const newStatus = allowedTransitions[currentStatus];
+  if (!newStatus) {
+    return next(
+      new AppError(
+        `Task is already completed. No further status updates allowed`,
+        400,
+      ),
+    );
+  }
+  task.status = newStatus;
+  await task.save();
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Task updated successfully',
+  });
+});

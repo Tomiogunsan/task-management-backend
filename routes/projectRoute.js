@@ -30,4 +30,6 @@ router
   .route('/:id/task/:taskId/assign')
   .patch(taskController.assignUsersToTask);
 
+router.route('/:id/task/:taskId/status').patch(taskController.updateTaskStatus);
+
 module.exports = router;
