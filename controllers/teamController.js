@@ -149,6 +149,10 @@ exports.getTeamMemberDetails = catchAsync(async (req, res, next) => {
     {
       path: 'tasks',
       select: '_id name description status dateCreated',
+      populate: {
+        path: 'project',
+        select: '_id name',
+      },
     },
   ]);
   if (!member) return next(new AppError('No member found', 404));
