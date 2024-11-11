@@ -51,7 +51,7 @@ exports.login = catchAsync(async (req, res, next) => {
     next(new AppError('Incorrect email or password', 401));
   }
 
-  const token = signToken(user._id);
+  const token = signToken(user);
 
   res.status(200).json({
     status: 'success',
