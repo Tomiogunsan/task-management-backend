@@ -1,19 +1,21 @@
 const express = require('express');
 const teamController = require('../controllers/teamController');
-// const requiredRole = require('../utils/getRole')
+const getRole = require('../utils/getRole');
 
 const router = express.Router();
 
 router
   .route('/')
   .get(teamController.getAllTeam)
-  .post(teamController.createTeam);
+  .post(getRole('admin'), teamController.createTeam);
 
 router
   .route('/:id/member')
   .get(teamController.getAllTeamMembers)
-  .patch(teamController.addMembers);
-router.route('/:id/assign-project').patch(teamController.assignProject);
+  .patch(getRole('admin'), teamController.addMembers);
+router
+  .route('/:id/assign-project')
+  .patch(getRole('admin'), teamController.assignProject);
 router.route('/:id/member/:memberId').get(teamController.getTeamMemberDetails);
 
 module.exports = router;
