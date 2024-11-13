@@ -77,7 +77,8 @@ exports.assignProject = catchAsync(async (req, res, next) => {
   const project = await Project.findById(projectId);
   if (!project) return next(new AppError('No Project Found', 404));
 
-  const teamProjectId = team.projects.map((item) => item._id);
+  const teamProjectId = (team.projects || []).map((item) => item._id);
+
   if (teamProjectId && teamProjectId.includes(projectId)) {
     return next(new AppError('This team already has a project', 404));
   }
