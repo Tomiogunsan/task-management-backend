@@ -1,7 +1,7 @@
 const express = require('express');
 const projectController = require('../controllers/projectController');
 const taskController = require('../controllers/taskController');
-const getRole = require('../utils/getRole');
+const getRole = require('../utils/authenticatedUser');
 
 const router = express.Router();
 
@@ -13,23 +13,23 @@ router
 router
   .route('/:id')
   .get(projectController.getProject)
-  .patch(getRole('admin'), projectController.updateProject)
-  .delete(getRole('admin'), projectController.deleteProject);
+  .patch(projectController.updateProject)
+  .delete(projectController.deleteProject);
 
 router
   .route('/:id/task')
   .get(taskController.getAllTask)
-  .post(getRole('admin'), taskController.createTask);
+  .post(taskController.createTask);
 
 router
   .route('/:id/task/:taskId')
   .get(taskController.getTask)
-  .patch(getRole('admin'), taskController.updateTask)
-  .delete(getRole('admin'), taskController.deleteTask);
+  .patch(taskController.updateTask)
+  .delete(taskController.deleteTask);
 
 router
   .route('/:id/task/:taskId/assign')
-  .patch(getRole('admin'), taskController.assignUsersToTask);
+  .patch(taskController.assignUsersToTask);
 
 router.route('/:id/task/:taskId/status').patch(taskController.updateTaskStatus);
 

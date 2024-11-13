@@ -7,8 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 const swaggerJsdoc = require('swagger-jsdoc');
-// eslint-disable-next-line import/no-extraneous-dependencies
-const session = require('express-session');
+
 const authRoute = require('./routes/authRoute');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -20,7 +19,6 @@ const { version } = require('./package.json');
 
 dotenv.config({ path: './config.env' });
 
-const sessionSecret = process.env.SESSION_SECRET;
 const app = express();
 
 app.use(express.json());
@@ -69,15 +67,6 @@ app.use(
     origin: '*',
     methods: 'GET,POST,PUT,DELETE,PATCH',
     credentials: true,
-  }),
-);
-
-app.use(
-  session({
-    secret: sessionSecret,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true },
   }),
 );
 

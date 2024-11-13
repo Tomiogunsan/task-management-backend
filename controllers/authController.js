@@ -52,6 +52,13 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   if (user) {
     req.session.user = { id: user._id, role: user.role };
+
+    req.session.save((err) => {
+      if (err) {
+        return next(new AppError('Session save failed', 500));
+      }
+      // Continue with your response or next action
+    });
   }
   const payload = {
     email: user.email,
