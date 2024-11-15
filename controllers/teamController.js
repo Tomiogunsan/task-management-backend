@@ -77,19 +77,25 @@ exports.assignProject = catchAsync(async (req, res, next) => {
   const project = await Project.findById(projectId);
   if (!project) return next(new AppError('No Project Found', 404));
 
-  const teamProjectId = (team.projects || []).map((item) => item._id);
+  const teamProjectId = team.projects
+    ? team.projects.map((item) => item._id)
+    : [];
 
   if (teamProjectId && teamProjectId.includes(projectId)) {
     return next(new AppError('This team already has a project', 404));
   }
+
   team.projects.push(project);
   await team.save();
   await Promise.all(
     team.members.map(async (memberId) => {
       const user = await User.findById(memberId);
+      if (!user) return next(new AppError('This team has no member', 404));
       project.teamMembers.push(user);
-      project.save();
-      const projectIds = user.projects.map((item) => item._id);
+
+      const projectIds = user.projects
+        ? user.projects.map((item) => item._id)
+        : [];
       if (projectIds.includes(projectId)) {
         return next(
           new AppError('This Project has already been assigned', 404),
@@ -101,7 +107,7 @@ exports.assignProject = catchAsync(async (req, res, next) => {
       await user.save();
     }),
   );
-
+  await project.save();
   res.status(200).json({
     status: 'success',
     message: 'Project Added Successfully',
