@@ -19,10 +19,11 @@ exports.createMessage = catchAsync(async (req, res, next) => {
   if (user.role !== 'admin' && Boolean(teamMember)) {
     return next(new AppError('This user is not part of this team', 404));
   }
+
   const message = await Message.create({
     content,
-    sender: user,
-    team,
+    userId: user._id,
+    teamId: team._id,
   });
   res.status(201).json({
     status: 'success',
