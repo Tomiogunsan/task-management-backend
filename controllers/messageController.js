@@ -22,8 +22,8 @@ exports.createMessage = catchAsync(async (req, res, next) => {
 
   const message = await Message.create({
     content,
-    userId: user._id,
-    teamId: team._id,
+    sender: user._id,
+    team: req.params.teamId,
   });
   res.status(201).json({
     status: 'success',
