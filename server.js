@@ -31,7 +31,13 @@ const server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
 
-const io = socketio(server);
+const io = socketio(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+});
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
