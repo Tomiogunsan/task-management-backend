@@ -56,6 +56,7 @@ exports.login = catchAsync(async (req, res, next) => {
     name: user.name,
     role: user.role,
     id: user._id,
+    team: user.teams.map((item) => item.toString()),
   };
 
   const token = signToken(payload);

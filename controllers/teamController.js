@@ -15,10 +15,15 @@ exports.createTeam = catchAsync(async (req, res) => {
 });
 
 exports.getAllTeam = catchAsync(async (req, res, next) => {
-  const teams = await Team.find()
+  const { teamId } = req.query;
+  let teams = await Team.find()
     .populate('projects', ' _id, name')
     .sort({ dateCreated: -1 });
-  if (!teams) {
+
+  if (teamId) {
+    teams = teams.filter((team) => team._id.toString() === teamId);
+  }
+  if (!teams.length) {
     return next(new AppError('No team found ', 404));
   }
   res.status(200).json({
@@ -53,6 +58,15 @@ exports.addMembers = catchAsync(async (req, res, next) => {
       ),
     );
   }
+
+  await Promise.all(
+    users.map(async (user) => {
+      if (!user.teams.includes(team._id)) {
+        user.teams.push(team._id);
+        await user.save();
+      }
+    }),
+  );
   const updatedTeam = await Team.findByIdAndUpdate(
     id,
     {
