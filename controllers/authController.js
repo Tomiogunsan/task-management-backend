@@ -55,6 +55,7 @@ exports.login = catchAsync(async (req, res, next) => {
     email: user.email,
     name: user.name,
     role: user.role,
+    id: user._id,
   };
 
   const token = signToken(payload);
