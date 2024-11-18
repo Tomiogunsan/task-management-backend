@@ -12,11 +12,11 @@ exports.createMessage = catchAsync(async (req, res, next) => {
   }
   const user = await User.findById(userId);
 
-  const teamMember = team.members.map(
+  const teamMember = team.members.find(
     (memberId) => memberId.toString() === user._id.toString(),
   );
 
-  if (user.role !== 'admin' && Boolean(teamMember)) {
+  if (user.role !== 'admin' && !teamMember) {
     return next(new AppError('This user is not part of this team', 404));
   }
 
