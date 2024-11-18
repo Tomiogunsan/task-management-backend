@@ -11,15 +11,15 @@ exports.createMessage = catchAsync(async (req, res, next) => {
     return next(new AppError('No team found ', 404));
   }
   const user = await User.findById(userId);
-  console.log(user);
+
   const teamMember = team.members.map(
     (memberId) => memberId.toString() === user._id.toString(),
   );
-  console.log(teamMember);
+
   if (user.role !== 'admin' && Boolean(teamMember)) {
     return next(new AppError('This user is not part of this team', 404));
   }
-  await Message.create({
+  const message = await Message.create({
     content,
     sender: user,
     team,
@@ -27,6 +27,9 @@ exports.createMessage = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     message: 'Message created successfully',
+    data: {
+      message,
+    },
   });
 });
 
