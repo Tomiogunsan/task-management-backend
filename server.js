@@ -94,4 +94,4 @@ io.on('connection', (socket) => {
 //   useUnifiedTopology: true,
 // }
 
-module.exports = io;
+module.exports = server;

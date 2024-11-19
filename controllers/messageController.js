@@ -1,9 +1,12 @@
+// const socketio = require('socket.io');
+
 const Message = require('../models/messageModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const User = require('../models/userModel');
 const Team = require('../models/teamModel');
-const io = require('../server');
+// const server = require('../server');
+// const io = socketio(server);
 
 exports.createMessage = catchAsync(async (req, res, next) => {
   const { content, userId } = req.body;
@@ -27,7 +30,7 @@ exports.createMessage = catchAsync(async (req, res, next) => {
     team: req.params.teamId,
   });
 
-  io.to(req.params.teamId).emit('receiveMessage', message);
+  // io.to(req.params.teamId).emit('receiveMessage', message);
 
   res.status(201).json({
     status: 'success',
