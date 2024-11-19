@@ -3,7 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const User = require('../models/userModel');
 const Team = require('../models/teamModel');
-const io = require('../socket/socket');
+const io = require('../server');
 
 exports.createMessage = catchAsync(async (req, res, next) => {
   const { content, userId } = req.body;
