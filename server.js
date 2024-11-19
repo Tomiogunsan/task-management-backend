@@ -1,13 +1,7 @@
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-const socketio = require('socket.io');
 const app = require('./app');
-const catchAsync = require('./utils/catchAsync');
-const User = require('./models/userModel');
-const Team = require('./models/teamModel');
-const Message = require('./models/messageModel');
 
 dotenv.config({ path: './config.env' });
 
@@ -31,61 +25,7 @@ const server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
 
-const io = socketio(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
-});
-
-io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
-  socket.on('joinTeam', (teamId) => {
-    if (!mongoose.Types.ObjectId.isValid(teamId)) {
-      console.error('Invalid teamId');
-      return;
-    }
-    socket.join(teamId);
-    console.log(`User joined room: ${teamId}`);
-  });
-
-  socket.on(
-    'sendMessage',
-    catchAsync(async (data) => {
-      const { content, teamId, userId } = data;
-      const team = await Team.findById(teamId);
-      if (!team) {
-        console.error('No team found');
-        return;
-      }
-      const user = await User.findById(userId);
-      if (!user) {
-        console.error('No user found');
-        return;
-      }
-      const teamMember = team.members.includes(user._id);
-      console.log('team', teamMember);
-      if (user.role !== 'admin' && !teamMember) {
-        console.error('User is not part of the team');
-        return;
-      }
-      const message = await Message.create({
-        content,
-        team: teamId,
-        sender: userId,
-      });
-      console.log('Emitting message to team:', teamId);
-      io.to(teamId).emit('receiveMessage', message);
-      console.log('Message sent:', message);
-    }),
-  );
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected', socket.id);
-  });
-});
+module.exports = server;
 
 //    {
 //   useNewUrlParser: true,
