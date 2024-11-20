@@ -54,7 +54,7 @@ io.on('connection', (socket) => {
   socket.on(
     'sendMessage',
     catchAsync(async (data) => {
-      const { content, teamId, userId } = data;
+      const { teamId, userId, messageId } = data;
       const team = await Team.findById(teamId);
       if (!team) {
         console.error('No team found');
@@ -71,13 +71,18 @@ io.on('connection', (socket) => {
         console.error('User is not part of the team');
         return;
       }
-      const message = await Message.create({
-        content,
-        team: teamId,
-        sender: userId,
-      });
+      // const message = await Message.create({
+      //   content,
+      //   team: teamId,
+      //   sender: userId,
+      // });
+      const message = await Message.find({ _id: messageId }).populate(
+        'sender',
+        'name role',
+      );
+
       console.log('Emitting message to team:', teamId);
-      io.to(teamId).emit('receiveMessage', message);
+      io.to(teamId).emit('receiveMessage', message[0]);
       console.log('Message sent:', message);
     }),
   );

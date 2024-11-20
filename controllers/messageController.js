@@ -24,11 +24,16 @@ exports.createMessage = catchAsync(async (req, res, next) => {
     return next(new AppError('This user is not part of this team', 404));
   }
 
-  const message = await Message.create({
+  const messageObject = await Message.create({
     content,
     sender: user._id,
     team: req.params.teamId,
   });
+
+  const message = await Message.find({ _id: messageObject._id }).populate(
+    'sender',
+    'name role',
+  );
 
   // io.to(req.params.teamId).emit('receiveMessage', message);
 
@@ -36,7 +41,7 @@ exports.createMessage = catchAsync(async (req, res, next) => {
     status: 'success',
     message: 'Message created successfully',
     data: {
-      message,
+      message: message[0],
     },
   });
 });
