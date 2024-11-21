@@ -33,7 +33,7 @@ const server = app.listen(port, () => {
 
 const io = socketio(server, {
   cors: {
-    origin: '*',
+    origin: '*:*',
     methods: ['GET', 'POST'],
     credentials: true,
   },
