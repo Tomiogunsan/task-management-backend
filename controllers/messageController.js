@@ -47,7 +47,8 @@ exports.createMessage = catchAsync(async (req, res, next) => {
 });
 
 exports.getTeamMessages = catchAsync(async (req, res, next) => {
-  const team = await Team.findById(req.params.teamId);
+  const { teamId } = req.body;
+  const team = await Team.findById(teamId);
   if (!team) {
     return next(new AppError('No team found ', 404));
   }
