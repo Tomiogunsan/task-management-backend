@@ -76,7 +76,7 @@ app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/project', projectRoute);
 app.use('/api/v1/team', teamRoute);
 app.use('/api/v1/user', userRoute);
-app.use('/api/v1', messsageRoute);
+app.use('/api/v1/message', messsageRoute);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server`, 404));

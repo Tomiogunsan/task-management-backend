@@ -73,11 +73,7 @@ io.on('connection', (socket) => {
         console.error('User is not part of the team');
         return;
       }
-      // const message = await Message.create({
-      //   content,
-      //   team: teamId,
-      //   sender: userId,
-      // });
+
       const message = await Message.find({ _id: messageId }).populate(
         'sender',
         'name role',
