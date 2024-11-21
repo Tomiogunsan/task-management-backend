@@ -9,7 +9,8 @@ const Team = require('../models/teamModel');
 // const io = socketio(server);
 
 exports.createMessage = catchAsync(async (req, res, next) => {
-  const { content, userId, teamId } = req.body;
+  const { content, userId } = req.body;
+  const { teamId } = req.params;
   const team = await Team.findById(teamId);
   if (!team) {
     return next(new AppError('No team found ', 404));
@@ -47,7 +48,7 @@ exports.createMessage = catchAsync(async (req, res, next) => {
 });
 
 exports.getTeamMessages = catchAsync(async (req, res, next) => {
-  const { teamId } = req.body;
+  const { teamId } = req.params;
   const team = await Team.findById(teamId);
   if (!team) {
     return next(new AppError('No team found ', 404));
