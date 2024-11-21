@@ -9,8 +9,8 @@ const Team = require('../models/teamModel');
 // const io = socketio(server);
 
 exports.createMessage = catchAsync(async (req, res, next) => {
-  const { content, userId } = req.body;
-  const team = await Team.findById(req.params.teamId);
+  const { content, userId, teamId } = req.body;
+  const team = await Team.findById(teamId);
   if (!team) {
     return next(new AppError('No team found ', 404));
   }
@@ -27,7 +27,7 @@ exports.createMessage = catchAsync(async (req, res, next) => {
   const messageObject = await Message.create({
     content,
     sender: user._id,
-    team: req.params.teamId,
+    team: teamId,
   });
 
   const message = await Message.find({ _id: messageObject._id }).populate(

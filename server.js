@@ -32,6 +32,8 @@ const server = app.listen(port, () => {
 });
 
 const io = socketio(server, {
+  // path: '/message',
+  // transports: ['websocket'],
   cors: {
     origin: '*:*',
     methods: ['GET', 'POST'],

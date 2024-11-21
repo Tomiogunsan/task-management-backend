@@ -5,7 +5,7 @@ const messageController = require('../controllers/messageController');
 const router = express.Router();
 
 router
-  .route('/:teamId')
+  .route('')
   .get(messageController.getTeamMessages)
   .post(messageController.createMessage);
 
